@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 import AttachmentModal from '../../../components/AttachmentModal';
@@ -23,6 +23,7 @@ function ReportAttachments(props) {
     const reportID = _.get(props, ['route', 'params', 'reportID']);
     const report = ReportUtils.getReport(reportID);
     const source = decodeURI(_.get(props, ['route', 'params', 'source']));
+    const [error, setError] = useState(false);
 
     return (
         <AttachmentModal
@@ -30,7 +31,8 @@ function ReportAttachments(props) {
             defaultOpen
             report={report}
             source={source}
-            onModalHide={() => Navigation.dismissModal(reportID)}
+            onError={() => setError(true)}
+            onModalHide={() => Navigation.dismissModal(reportID, error)}
             onCarouselAttachmentChange={(attachment) => {
                 const route = ROUTES.getReportAttachmentRoute(reportID, attachment.source);
                 Navigation.navigate(route);

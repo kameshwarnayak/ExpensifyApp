@@ -27,7 +27,7 @@ const viewabilityConfig = {
     itemVisiblePercentThreshold: 95,
 };
 
-function AttachmentCarousel({report, reportActions, source, onNavigate, setDownloadButtonVisibility, translate}) {
+function AttachmentCarousel({report, reportActions, source, onNavigate, setDownloadButtonVisibility, translate, onError}) {
     const scrollRef = useRef(null);
 
     const {windowWidth, isSmallScreenWidth} = useWindowDimensions();
@@ -158,6 +158,7 @@ function AttachmentCarousel({report, reportActions, source, onNavigate, setDownl
                 isFocused={activeSource === item.source}
                 onPress={canUseTouchScreen ? () => setShouldShowArrows(!shouldShowArrows) : undefined}
                 isUsedInCarousel
+                onError={onError}
             />
         ),
         [activeSource, setShouldShowArrows, shouldShowArrows],

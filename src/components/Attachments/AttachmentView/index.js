@@ -62,6 +62,7 @@ function AttachmentView({
     translate,
     isFocused,
     isWorkspaceAvatar,
+    onError,
 }) {
     const [loadComplete, setLoadComplete] = useState(false);
 
@@ -122,6 +123,7 @@ function AttachmentView({
                 isImage={isImage}
                 onPress={onPress}
                 onScaleChanged={onScaleChanged}
+                onError={onError}
             />
         );
     }

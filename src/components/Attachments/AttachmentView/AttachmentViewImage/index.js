@@ -12,13 +12,15 @@ const propTypes = {
     ...withLocalizePropTypes,
 };
 
-function AttachmentViewImage({source, file, isAuthTokenRequired, loadComplete, onPress, isImage, onScaleChanged, translate}) {
+function AttachmentViewImage({source, file, isAuthTokenRequired, loadComplete, onPress, isImage, onScaleChanged, translate, onError}) {
     const children = (
         <ImageView
             onScaleChanged={onScaleChanged}
             url={source}
             fileName={file.name}
             isAuthTokenRequired={isImage && isAuthTokenRequired}
+            onError={onError}
+            translate={translate}
         />
     );
     return onPress ? (

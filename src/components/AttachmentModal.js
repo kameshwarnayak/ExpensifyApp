@@ -353,6 +353,7 @@ function AttachmentModal(props) {
                             onNavigate={onNavigate}
                             source={tryResolveUrlFromApiRoot(props.source)}
                             onClose={closeModal}
+                            onError={props.onError}
                             onToggleKeyboard={updateConfirmButtonVisibility}
                             setDownloadButtonVisibility={setDownloadButtonVisibility}
                         />
@@ -366,6 +367,7 @@ function AttachmentModal(props) {
                                 file={file}
                                 onToggleKeyboard={updateConfirmButtonVisibility}
                                 isWorkspaceAvatar={props.isWorkspaceAvatar}
+                                onError={props.onError}
                             />
                         )
                     )}

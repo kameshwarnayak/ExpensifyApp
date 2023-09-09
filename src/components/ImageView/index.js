@@ -8,6 +8,12 @@ import * as DeviceCapabilities from '../../libs/DeviceCapabilities';
 import FullscreenLoadingIndicator from '../FullscreenLoadingIndicator';
 import PressableWithoutFeedback from '../Pressable/PressableWithoutFeedback';
 import CONST from '../../CONST';
+import BlockingView from '../BlockingViews/BlockingView';
+import * as Illustrations from '../Icon/Illustrations';
+// import useLocalize from '../../hooks/useLocalize';
+import variables from '../../styles/variables';
+
+// const {translate} = useLocalize();
 
 const propTypes = {
     /** Whether source url requires authentication */
@@ -28,8 +34,9 @@ const defaultProps = {
     isAuthTokenRequired: false,
 };
 
-function ImageView({isAuthTokenRequired, url, fileName}) {
+function ImageView({isAuthTokenRequired, url, fileName, onError, translate}) {
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [containerHeight, setContainerHeight] = useState(0);
     const [containerWidth, setContainerWidth] = useState(0);
     const [isZoomed, setIsZoomed] = useState(false);
@@ -88,6 +95,7 @@ function ImageView({isAuthTokenRequired, url, fileName}) {
 
     const imageLoadingStart = () => {
         if (!isLoading) return;
+        setError(false);
         setIsLoading(true);
         setZoomScale(0);
         setIsZoomed(false);
@@ -96,6 +104,13 @@ function ImageView({isAuthTokenRequired, url, fileName}) {
     const imageLoad = ({nativeEvent}) => {
         setImageRegion(nativeEvent.width, nativeEvent.height);
         setIsLoading(false);
+        setError(false);
+    };
+
+    const onLoadError = (e) => {
+        setError(true);
+        setIsLoading(false);
+        onError();
     };
 
     /**
@@ -221,17 +236,27 @@ function ImageView({isAuthTokenRequired, url, fileName}) {
                 style={[styles.imageViewContainer, styles.overflowHidden]}
                 onLayout={onContainerLayoutChanged}
             >
-                <Image
-                    source={{uri: url}}
-                    isAuthTokenRequired={isAuthTokenRequired}
-                    // Hide image until finished loading to prevent showing preview with wrong dimensions.
-                    style={isLoading ? undefined : [styles.w100, styles.h100]}
-                    // When Image dimensions are lower than the container boundary(zoomscale <= 1), use `contain` to render the image with natural dimensions.
-                    // Both `center` and `contain` keeps the image centered on both x and y axis.
-                    resizeMode={zoomScale > 1 ? Image.resizeMode.center : Image.resizeMode.contain}
-                    onLoadStart={imageLoadingStart}
-                    onLoad={imageLoad}
-                />
+                {error === true ? (
+                    <BlockingView
+                        icon={Illustrations.ToddBehindCloud}
+                        iconWidth={variables.modalTopIconWidth}
+                        iconHeight={variables.modalTopIconHeight}
+                        title={translate('notFound.notHere')}
+                    />
+                ) : (
+                    <Image
+                        source={{uri: url}}
+                        isAuthTokenRequired={isAuthTokenRequired}
+                        // Hide image until finished loading to prevent showing preview with wrong dimensions.
+                        style={isLoading ? undefined : [styles.w100, styles.h100]}
+                        // When Image dimensions are lower than the container boundary(zoomscale <= 1), use `contain` to render the image with natural dimensions.
+                        // Both `center` and `contain` keeps the image centered on both x and y axis.
+                        resizeMode={zoomScale > 1 ? Image.resizeMode.center : Image.resizeMode.contain}
+                        onLoadStart={imageLoadingStart}
+                        onLoad={imageLoad}
+                        onError={onLoadError}
+                    />
+                )}
                 {isLoading && <FullscreenLoadingIndicator style={[styles.opacity1, styles.bgTransparent]} />}
             </View>
         );
@@ -254,14 +279,24 @@ function ImageView({isAuthTokenRequired, url, fileName}) {
                 accessibilityRole={CONST.ACCESSIBILITY_ROLE.IMAGE}
                 accessibilityLabel={fileName}
             >
-                <Image
-                    source={{uri: url}}
-                    isAuthTokenRequired={isAuthTokenRequired}
-                    style={[styles.h100, styles.w100]}
-                    resizeMode={Image.resizeMode.contain}
-                    onLoadStart={imageLoadingStart}
-                    onLoad={imageLoad}
-                />
+                {error === true ? (
+                    <BlockingView
+                        icon={Illustrations.ToddBehindCloud}
+                        iconWidth={variables.modalTopIconWidth}
+                        iconHeight={variables.modalTopIconHeight}
+                        title={translate('notFound.notHere')}
+                    />
+                ) : (
+                    <Image
+                        source={{uri: url}}
+                        isAuthTokenRequired={isAuthTokenRequired}
+                        style={[styles.h100, styles.w100]}
+                        resizeMode={Image.resizeMode.contain}
+                        onLoadStart={imageLoadingStart}
+                        onLoad={imageLoad}
+                        onError={onLoadError}
+                    />
+                )}
             </PressableWithoutFeedback>
 
             {isLoading && <FullscreenLoadingIndicator style={[styles.opacity1, styles.bgTransparent]} />}

@@ -153,7 +153,7 @@ function setParams(params, routeKey) {
  *
  * @param {String | undefined} targetReportID - The reportID to navigate to after dismissing the modal
  */
-function dismissModal(targetReportID) {
+function dismissModal(targetReportID, error) {
     if (!canNavigate('dismissModal')) {
         return;
     }
@@ -164,7 +164,7 @@ function dismissModal(targetReportID) {
         case SCREENS.NOT_FOUND:
         case SCREENS.REPORT_ATTACHMENTS:
             // if we are not in the target report, we need to navigate to it after dismissing the modal
-            if (targetReportID && targetReportID !== getTopmostReportId(rootState)) {
+            if (!error && targetReportID && targetReportID !== getTopmostReportId(rootState)) {
                 const state = getStateFromPath(ROUTES.getReportRoute(targetReportID));
 
                 const action = getActionFromState(state, linkingConfig.config);
